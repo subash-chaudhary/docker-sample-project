@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    stages {
+        stage('mvn clean') {
+            steps {
+                sh 'mvn -f pom.xml clean package'
+            }
+            post {
+                success {
+                    echo "Archieve artifact"
+                    archiveArtifacts artifacts: '**/*.war'
+                }
+            }
+        }
+
+        stage('Build docker image'){
+            steps {
+                sh "pwd"
+                sh "docker build . -t samplewebappdocker:${env.BUILD_ID}"
+            }
+        }
+
+    }
+}
